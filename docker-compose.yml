@@ -1,0 +1,72 @@
+# docker-compose.yml
+version: "3.8"
+
+services:
+  claim_process:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    container_name: claim_process
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--app-dir", "/app"]
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - backend
+
+  payments:
+    build:
+      context: .
+      dockerfile: ./payments/Dockerfile
+    container_name: payments
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    volumes:
+      - ./payments:/app
+    ports:
+      - "8001:8001"
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: claims_db
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+  
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+
+  # tests:
+  #   build:
+  #     context: .
+  #     dockerfile: tests/Dockerfile
+  #   command: pytest tests/test_app.py
+  #   depends_on:
+  #     - claim_process
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - backend
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: "0.5"
+  #         memory: "512M"
+
+networks:
+  backend:
+    driver: bridge
