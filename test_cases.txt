@@ -1,0 +1,27 @@
+curl -X POST "http://127.0.0.1:8000/claims/" -H "Content-Type: application/json" -d '{
+  "service_date": "2023-03-28",
+  "submitted_procedure": "D0180",
+  "plan_group": "GRP-1000",
+  "subscriber": "3730189502",
+  "provider_npi": "1497775530",
+  "provider_fees": 100,
+  "allowed_fees": 100,
+  "member_coinsurance": 0,
+  "member_copay": 0
+}'
+
+
+curl -X GET http://127.0.0.1:8000/claims/
+
+curl -X POST "http://127.0.0.1:8000/upload_csv/" -H "Content-Type: multipart/form-data" -F "file=@claim_1234.csv"
+
+curl -X GET http://127.0.0.1:8000/top_providers/
+
+
+pytest test_app.py::test_create_claim -v
+
+pytest test_app.py::test_get_claims -v
+
+pytest test_app.py::test_upload_csv -v
+
+pytest test_app.py::test_get_top_providers -v

@@ -1,6 +1,12 @@
+import sys
+import os
+
+# Ensure /app is in the Python path
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app
+from main import app
 import io
 from fastapi import UploadFile
 
@@ -26,6 +32,7 @@ def test_create_claim():
     assert response.json() == {"message": "Claim added and payment processed successfully"}
 
 
+
 def test_get_claims():
     response = client.get("/claims/")
     
@@ -47,8 +54,9 @@ def test_upload_csv():
     
     assert response.status_code == 200
     assert response.json() == {"message": "Claims successfully processed"}
-
-
+    
+    
+    
 def test_get_top_providers():
     response = client.get("/top_providers/")
     
